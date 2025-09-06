@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML Resource</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Main UI Container -->
+    <div id="container">
+        <h1>HTML Resource</h1>
+        <div id="content">
+            <div id="tabs">
+                <button class="tab-button active" data-tab="main">Main</button>
+                <button class="tab-button" data-tab="settings">Settings</button>
+                <button class="tab-button" data-tab="notifications">Notifications</button>
+            </div>
+            
+            <!-- Main Tab -->
+            <div id="main-tab" class="tab-content active">
+                <p>This is a basic HTML interface for your FiveM resource.</p>
+                <p>Use the tabs above to navigate between different sections.</p>
+            </div>
+            
+            <!-- Settings Tab -->
+            <div id="settings-tab" class="tab-content">
+                <h2>UI Settings</h2>
+                <div class="setting-item">
+                    <label for="theme-select">Theme:</label>
+                    <select id="theme-select">
+                        <option value="dark">Dark</option>
+                        <option value="light">Light</option>
+                        <option value="blue">Blue</option>
+                    </select>
+                </div>
+                <div class="setting-item">
+                    <label for="notifications-toggle">Notifications:</label>
+                    <input type="checkbox" id="notifications-toggle" checked>
+                </div>
+                <div class="setting-item">
+                    <label for="sounds-toggle">Sounds:</label>
+                    <input type="checkbox" id="sounds-toggle" checked>
+                </div>
+                <button id="saveSettingsButton">Save Settings</button>
+                <div id="settings-saved-message">Settings saved successfully!</div>
+            </div>
+            
+            <!-- Notifications Tab -->
+            <div id="notifications-tab" class="tab-content">
+                <h2>Recent Notifications</h2>
+                <div id="notification-list">
+                    <!-- Notifications will be added here dynamically -->
+                    <p class="empty-message">No notifications yet.</p>
+                </div>
+            </div>
+        </div>
+        <div id="buttons">
+            <button id="closeButton">Close</button>
+        </div>
+    </div>
+    
+    <!-- Notification Container -->
+    <div id="notification-container">
+        <!-- Notifications will be added here dynamically -->
+    </div>
+
+    <script>
+        // Global variables
+        let settings = {
+            theme: "dark",
+            notifications: true,
+            sounds: true
+        };
+        
+        let notificationHistory = [];
+        
+        // Apply theme
+        function applyTheme(theme) {
+            document.body.className = theme + "-theme";
+            document.getElementById('theme-select').value = theme;
+        }
+        
+        // Initialize UI
+        function initializeUI() {
+            // Set up tab navigation
+            const tabButtons = document.querySelectorAll('.tab-button');
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all buttons and content
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                    
+                    // Add active class to clicked button and corresponding content
+                    this.classList.add('active');
+                    document.getElementById(this.dataset.tab + '-tab').classList.add('active');
+                });
+            });
+            
+            // Initialize settings controls
+            document.getElementById('theme-select').value = settings.theme;
+            document.getElementById('notifications-toggle').checked = settings.notifications;
+            document.getElementById('sounds-toggle').checked = settings.sounds;
+            
+            // Apply current theme
+            applyTheme(settings.theme);
+            
+            // Hide settings saved message
+            document.getElementById('settings-saved-message').style.display = 'none';
+        }
+        
+        // Show notification
+        function showNotification(data) {
+            // Add to history
+            notificationHistory.push(data);
+            
+            // Limit history size
+            if (notificationHistory.length > 10) {
+                notificationHistory.shift();
+            }
+            
+            // Update notification list if tab is open
+            updateNotificationList();
+            
+            // Don't show popup if notifications are disabled
+            if (!settings.notifications) return;
+            
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = 'notification ' + (data.type || 'info');
+            
+            // Create notification content
+            notification.innerHTML = `
+                <div class="notification-header">
+                    <span class="notification-title">${data.title}</span>
+                    <span class="notification-close">×</span>
+                </div>
+                <div class="notification-body">
+                    <p>${data.message}</p>
+                </div>
+                <div class="notification-footer">
+                    <span class="notification-sender">From: ${data.sender}</span>
+                </div>
+            `;
+            
+            // Add to container
+            document.getElementById('notification-container').appendChild(notification);
+            
+            // Add close functionality
+            notification.querySelector('.notification-close').addEventListener('click', function() {
+                notification.classList.add('notification-hiding');
+                setTimeout(() => {
+                    notification.remove();
+                }, 500);
+            });
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.classList.add('notification-hiding');
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            notification.remove();
+                        }
+                    }, 500);
+                }
+            }, 5000);
+        }
+        
+        // Update notification list
+        function updateNotificationList() {
+            const list = document.getElementById('notification-list');
+            
+            // Clear current list
+            list.innerHTML = '';
+            
+            if (notificationHistory.length === 0) {
+                list.innerHTML = '<p class="empty-message">No notifications yet.</p>';
+                return;
+            }
+            
+            // Add notifications to list
+            notificationHistory.forEach((notification, index) => {
+                const item = document.createElement('div');
+                item.className = 'notification-item ' + (notification.type || 'info');
+                
+                item.innerHTML = `
+                    <div class="notification-item-header">
+                        <span class="notification-item-title">${notification.title}</span>
+                    </div>
+                    <div class="notification-item-body">
+                        <p>${notification.message}</p>
+                    </div>
+                    <div class="notification-item-footer">
+                        <span class="notification-item-sender">From: ${notification.sender}</span>
+                    </div>
+                `;
+                
+                list.appendChild(item);
+            });
+        }
+        
+        // Save settings
+        function saveSettings() {
+            // Get values from UI
+            settings.theme = document.getElementById('theme-select').value;
+            settings.notifications = document.getElementById('notifications-toggle').checked;
+            settings.sounds = document.getElementById('sounds-toggle').checked;
+            
+            // Apply theme
+            applyTheme(settings.theme);
+            
+            // Send to client script
+            fetch(`https://${GetParentResourceName()}/saveSettings`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(settings)
+            });
+            
+            // Show saved message
+            const savedMessage = document.getElementById('settings-saved-message');
+            savedMessage.style.display = 'block';
+            setTimeout(() => {
+                savedMessage.style.display = 'none';
+            }, 3000);
+        }
+        
+        // Listen for NUI messages from the client script
+        window.addEventListener('message', function(event) {
+            const data = event.data;
+            
+            if (data.type === 'open') {
+                document.getElementById('container').style.display = 'block';
+            } else if (data.type === 'close') {
+                document.getElementById('container').style.display = 'none';
+            } else if (data.type === 'notification') {
+                showNotification(data.data);
+            } else if (data.type === 'updateSettings') {
+                settings = data.settings;
+                
+                // Update UI
+                document.getElementById('theme-select').value = settings.theme;
+                document.getElementById('notifications-toggle').checked = settings.notifications;
+                document.getElementById('sounds-toggle').checked = settings.sounds;
+                
+                // Apply theme
+                applyTheme(settings.theme);
+            } else if (data.type === 'settingsSaved') {
+                if (data.success) {
+                    // Show saved message
+                    const savedMessage = document.getElementById('settings-saved-message');
+                    savedMessage.style.display = 'block';
+                    setTimeout(() => {
+                        savedMessage.style.display = 'none';
+                    }, 3000);
+                }
+            } else if (data.type === 'reload') {
+                // Reload UI
+                initializeUI();
+                notificationHistory = [];
+                updateNotificationList();
+            }
+        });
+
+        // Close button functionality
+        document.getElementById('closeButton').addEventListener('click', function() {
+            fetch(`https://${GetParentResourceName()}/close`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({})
+            });
+        });
+        
+        // Save settings button functionality
+        document.getElementById('saveSettingsButton').addEventListener('click', saveSettings);
+
+        // Initialize UI when page loads
+        document.addEventListener('DOMContentLoaded', initializeUI);
+    </script>
+</body>
+</html>

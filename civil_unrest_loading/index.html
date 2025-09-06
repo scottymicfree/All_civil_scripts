@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Civil Unrest Loading</title>
+  <style>
+    body {
+      background-color: black;
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      background-image: url('background.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    .container {
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 40px;
+      border-radius: 10px;
+      max-width: 80%;
+    }
+
+    .title {
+      font-size: 48px;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      text-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
+    }
+
+    .subtitle {
+      font-size: 24px;
+      margin-bottom: 40px;
+      opacity: 0.8;
+    }
+
+    .loader {
+      font-size: 28px;
+      animation: pulse 1.2s infinite;
+      margin-top: 30px;
+    }
+
+    .progress-container {
+      width: 80%;
+      height: 20px;
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      margin-top: 30px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background-color: rgba(255, 0, 0, 0.7);
+      transition: width 0.5s;
+    }
+
+    .tips {
+      margin-top: 40px;
+      font-style: italic;
+      opacity: 0.7;
+      max-width: 80%;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.3; }
+      100% { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="title">Civil Unrest</div>
+    <div class="subtitle">Welcome to Los Santos</div>
+    <div class="progress-container">
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+    <div class="loader">Loading...</div>
+    <div class="tips" id="tips">Press D-pad UP to interact with NPCs</div>
+  </div>
+
+  <audio id="bgm" autoplay loop>
+    <source src="23747fa7-1e18-47af-a9a9-acb4c5170eda.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    // Tips to display
+    const tips = [
+      "Press D-pad UP to interact with NPCs",
+      "Gang territories are marked on your map",
+      "Complete missions to earn money and respect",
+      "Press D-pad DOWN to access your player stats",
+      "Press D-pad LEFT for gang/job menu",
+      "Press D-pad RIGHT for vehicle/item menu",
+      "Use /setjob to change your job",
+      "Capture enemy turf by eliminating rival gang members",
+      "Safe zones are marked in blue on your map",
+      "Call for backup when in your gang territory"
+    ];
+
+    // Audio settings - higher volume
+    const audio = document.getElementById("bgm");
+    audio.volume = 0;
+    let volume = 0;
+    const fadeIn = setInterval(() => {
+      if (volume < 0.5) { // Increased max volume to 0.5 (50%)
+        volume += 0.05;
+        audio.volume = volume;
+      } else {
+        clearInterval(fadeIn);
+      }
+    }, 200);
+
+    // Progress bar animation
+    const progressBar = document.getElementById("progress-bar");
+    let progress = 0;
+    
+    // Slow down the progress to make loading screen last longer
+    const progressInterval = setInterval(() => {
+      if (progress < 100) {
+        progress += 0.2; // Slower progress (was 1)
+        progressBar.style.width = progress + "%";
+      } else {
+        clearInterval(progressInterval);
+      }
+    }, 100);
+
+    // Rotate tips
+    const tipsElement = document.getElementById("tips");
+    let currentTip = 0;
+    
+    setInterval(() => {
+      currentTip = (currentTip + 1) % tips.length;
+      tipsElement.style.opacity = 0;
+      
+      setTimeout(() => {
+        tipsElement.textContent = tips[currentTip];
+        tipsElement.style.opacity = 0.7;
+      }, 500);
+    }, 5000);
+
+    // Force minimum loading time of 30 seconds
+    const minLoadTime = 30000; // 30 seconds
+    const startTime = Date.now();
+    
+    // Override the default loadProgress function
+    window.onload = function() {
+      window.addEventListener('message', function(e) {
+        if (e.data.eventName === 'loadProgress') {
+          const elapsedTime = Date.now() - startTime;
+          if (elapsedTime < minLoadTime) {
+            // Calculate artificial progress based on elapsed time
+            const artificialProgress = (elapsedTime / minLoadTime) * 100;
+            progressBar.style.width = artificialProgress + "%";
+          } else {
+            // Use actual loading progress after minimum time
+            progressBar.style.width = e.data.loadFraction * 100 + "%";
+          }
+        }
+      });
+    };
+  </script>
+</body>
+</html>

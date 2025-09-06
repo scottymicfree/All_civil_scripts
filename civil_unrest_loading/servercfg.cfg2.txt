@@ -1,0 +1,207 @@
+# ================================
+# 🚀 CIVIL UNREST RP SERVER CONFIGURATION
+# Built by Randy Webb
+# Updated for stable FiveM with full player support
+# ================================
+
+# 🧾 Server Identity
+sv_hostname "Civil Unrest RP | Gang Warfare | Custom Framework"
+sets sv_projectName "Civil Unrest RP"
+sets sv_projectDesc "Custom FiveM server with gang warfare, turf control, and NPC interactions."
+sets tags "gangs, roleplay, custom framework, controller friendly"
+sets locale "en-US"
+sets Discord "Your Discord Link Here"
+sets Website "Your Website Here"
+sets banner_detail "https://i.imgur.com/YourBannerImage.png"
+sets banner_connecting "https://i.imgur.com/YourConnectingImage.png"
+
+# Basic server settings
+endpoint_add_tcp "0.0.0.0:30120"
+endpoint_add_udp "0.0.0.0:30120"
+sv_licenseKey "cfxk_1eNrCOcqtNwAAUzBcbj7N_3caHYm"
+sv_maxclients 32
+set sv_enforceGameBuild 2699
+
+# ================================
+# 🔄 CORE RESOURCES
+# ================================
+
+# Essential FiveM resources (load these first)
+ensure mapmanager
+ensure chat
+ensure spawnmanager
+ensure sessionmanager
+ensure baseevents
+ensure hardcap
+ensure basic-gamemode
+
+# Loading screen
+ensure loadingscreen
+
+# Database (if you're using it)
+ensure oxmysql
+
+# ================================
+# 🛠️ FRAMEWORK RESOURCES
+# ================================
+
+# Core framework
+ensure NativeUI
+ensure standalone-framework
+ensure fxcode-fivem
+ensure enhanced-framework
+
+# ================================
+# 🎮 GAMEPLAY RESOURCES
+# ================================
+
+# Civil Unrest Core
+ensure civil_unrest_core
+ensure civil_unrest_fire
+
+# NPC Systems
+ensure npc_logic
+ensure npc_interaction
+ensure npc_services
+
+# Controller Support
+ensure controller_support
+ensure dpad_access
+ensure controller_menu
+
+# UI Resources
+ensure HTML-RESOURCE
+
+# Job Systems
+ensure custom-job-blips
+ensure POLICE
+ensure mission_system
+
+# Gang Systems
+ensure gang_system
+
+# Menu Systems
+ensure vMenu
+
+# Base Resources
+ensure base_resource
+
+# ================================
+# 🗺️ MAPS
+# ================================
+
+ensure [maps]
+
+# ================================
+# 🧍 PLAYER SPAWN CONFIGURATION
+# ================================
+
+# Basic spawn system
+setr playerSpawnX 195.17
+setr playerSpawnY -933.77
+setr playerSpawnZ 30.69
+setr playerSpawnHeading 144.5
+
+# Spawn points
+setr spawnpoint "x:195.17 y:-933.77 z:30.69 heading:144.5"
+
+# ================================
+# 👮 ADMIN CONFIGURATION
+# ================================
+
+# Admin permissions
+add_ace group.admin command allow
+add_ace group.admin command.quit deny
+add_principal identifier.fivem:11498507 group.admin # scott_free
+add_ace group.admin vehiclemenu.use allow
+
+# Staff permissions
+add_ace group.moderator command.kick allow
+add_ace group.moderator command.spectate allow
+add_ace group.moderator command.freeze allow
+add_principal group.moderator group.user
+
+# User permissions
+add_ace group.user command.score allow
+add_ace group.user command.me allow
+
+# ================================
+# ⚙️ CONVARS & SETTINGS
+# ================================
+
+# OneSync settings (important for player synchronization)
+set onesync on
+set onesync_population false
+set onesync_forceMigration true
+set onesync_workaround763185 true
+set onesync_distanceCullVehicles true
+
+# Server settings
+setr voice_useNativeAudio true
+setr voice_useSendingRangeOnly true
+setr voice_defaultCycle "GRAVE"
+setr voice_defaultVolume 0.3
+setr voice_enableRadioAnim 1
+setr voice_syncData 1
+
+# Game settings
+set sv_scriptHookTimeout 10000
+set sv_enforceGameBuild 2545
+
+# Debug settings (disable in production)
+set mapmanager_debug 0
+set sv_loglevel 3
+
+# ================================
+# 🎮 GAMEPLAY SETTINGS
+# ================================
+
+# Gang system settings
+setr gang_turf_enabled true
+setr gang_npc_density 3
+
+# Police settings
+setr police_dispatch_enabled false
+setr police_blips_enabled true
+
+# NPC settings
+setr npc_interaction_range 3.0
+setr npc_density 0.8
+
+# ================================
+# 🔒 SECURITY SETTINGS
+# ================================
+
+set sv_endpointPrivacy true
+set sv_authMaxVariance 5
+set sv_authMinTrust 5
+
+# ================================
+# 📝 SERVER LOGGING
+# ================================
+
+set sv_log_identity 1
+set sv_log_chat 1
+set sv_log_warnings 1
+set sv_log_files 1
+
+# ================================
+# 🌐 CONNECTION SETTINGS
+# ================================
+
+# Connection settings
+set sv_maxPing 500
+set sv_maxPackets 50
+set sv_lanMode 0
+
+# ================================
+# 🚫 ANTI-CHEAT SETTINGS
+# ================================
+
+# Basic anti-cheat
+set sv_scriptHookAllowed 0
+set sv_enableDebugging 0
+
+# ================================
+# END OF CONFIGURATION
+# ================================

@@ -1,0 +1,40 @@
+fx_version 'cerulean'
+game 'gta5'
+author 'Randy Webb'
+description 'Police System for Civil Unrest RP'
+
+client_scripts {
+    'client/main.lua',
+    'client/dispatch.lua',
+    'client/interaction.lua',
+    'client/vehicles.lua'
+}
+
+server_scripts {
+    'server/main.lua',
+    'server/dispatch.lua'
+}
+
+shared_scripts {
+    'config.lua'
+}
+
+dependencies {
+    'standalone-framework',
+    'civil_unrest_core',
+    'job_wheel'
+}
+
+exports {
+    'IsPoliceJob',
+    'GetPoliceLevel',
+    'IsPlayerWanted',
+    'GetWantedLevel',
+    'SetWantedLevel'
+}
+
+server_exports {
+    'GetPoliceCount',
+    'IsPoliceOnDuty',
+    'NotifyPolice'
+}
